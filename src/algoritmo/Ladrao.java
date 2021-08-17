@@ -1,5 +1,7 @@
 package algoritmo;
 
+import java.util.Arrays;
+
 public class Ladrao extends ProgramaLadrao {
 
 	// Converte array linear para bidimensional
@@ -32,6 +34,9 @@ public class Ladrao extends ProgramaLadrao {
 	public int acao() {
 		int[][] visao = converterArray(sensor.getVisaoIdentificacao());
 		int[][] olfato = converterArray(sensor.getAmbienteOlfatoLadrao());
+
+		System.out.println("Visão: " + Arrays.deepToString(visao));
+		System.out.println("Olfato: " + Arrays.deepToString(olfato));
 
 		return (int) (Math.random() * 5);
 	}
