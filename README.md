@@ -1,4 +1,4 @@
-# Trabalho Ladrão x Poupador
+# Jogo de agentes inteligentes - Ladrão x Poupador
 A proposta desta atividade computacional é a de avaliar a habilidade dos alunos da disciplina de Inteligência Artificial da UNIFOR com respeito à 
 especificação e implementação de programas de agentes inteligentes (racionais). No caso, os agentes a serem implementados devem ser agentes de software 
 simples representando personagens em um jogo de computador denominado poupador. Para tanto, será disponibilizado aos alunos um ambiente de simulação 
