@@ -1,8 +1,15 @@
 package algoritmo;
 
 import java.util.Arrays;
+import java.util.Random;
 
 public class Ladrao extends ProgramaLadrao {
+
+	public Ladrao() {
+		int[][] direcoes = new int[][] { { new Random().nextBoolean() ? 1 : 4, 1, new Random().nextBoolean() ? 1 : 3 },
+				{ 4, (int) (Math.random() * 5), 3 },
+				{ new Random().nextBoolean() ? 2 : 4, 2, new Random().nextBoolean() ? 2 : 3 } };
+	}
 
 	// Converte array linear para bidimensional
 	public int[][] converterArray(int[] original) {
