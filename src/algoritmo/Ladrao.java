@@ -23,6 +23,16 @@ public class Ladrao extends ProgramaLadrao {
 	int[] visaoSudeste = { 17, 18, 22, 23 };
 	int[] visaoSudoeste = { 14, 15, 19, 20 };
 
+	// Códigos do olfato
+	int olfatoNorte = 1;
+	int olfatoSul = 6;
+	int olfatoLeste = 4;
+	int olfatoOeste = 3;
+	int olfatoNordeste = 2;
+	int olfatoNoroeste = 0;
+	int olfatoSudeste = 7;
+	int olfatoSudoeste = 5;
+
 	int[] visao;
 	int[] olfato;
 	int moedas;
@@ -57,47 +67,65 @@ public class Ladrao extends ProgramaLadrao {
 			return direcao;
 	}
 
-	// Verifica se tem algum poupador na visão. Se tiver, vai atrás dele
-	public int perseguirPoupador(int[] visao) {
-		// Buscar por poupadores
-		int indicePoupador = Util.indexOf(visao, poupador);
-
-		if (indicePoupador != -1) {
-			int desc = descobrirDirecao(indicePoupador);
-			return desc;
-		} else
-			return 0;
+	// Descobre a direção com base nos arrays de visão ou de olfato
+	public int descobrirDirecao(String arr, int num) {
+		if (arr == "visao") {
+			if (Util.contains(visaoNorte, num)) {
+				return norte;
+			} else if (Util.contains(visaoSul, num)) {
+				return sul;
+			} else if (Util.contains(visaoLeste, num)) {
+				return leste;
+			} else if (Util.contains(visaoOeste, num)) {
+				return oeste;
+			} else if (Util.contains(visaoSudeste, num)) {
+				return sudeste;
+			} else if (Util.contains(visaoSudoeste, num)) {
+				return sudoeste;
+			} else if (Util.contains(visaoNordeste, num)) {
+				return nordeste;
+			} else if (Util.contains(visaoNoroeste, num)) {
+				return noroeste;
+			} else
+				return 0;
+		} else {
+			if (olfatoNorte == num) {
+				return norte;
+			} else if (olfatoSul == num) {
+				return sul;
+			} else if (olfatoLeste == num) {
+				return leste;
+			} else if (olfatoOeste == num) {
+				return oeste;
+			} else if (olfatoSudeste == num) {
+				return sudeste;
+			} else if (olfatoSudoeste == num) {
+				return sudoeste;
+			} else if (olfatoNordeste == num) {
+				return nordeste;
+			} else if (olfatoNoroeste == num) {
+				return noroeste;
+			} else
+				return 0;
+		}
 	}
 
-	public int descobrirDirecao(int num) {
-		if (Util.contains(visaoNorte, num)) {
-			return norte;
-		} else if (Util.contains(visaoSul, num)) {
-			return sul;
-		} else if (Util.contains(visaoLeste, num)) {
-			return leste;
-		} else if (Util.contains(visaoOeste, num)) {
-			return oeste;
-		} else if (Util.contains(visaoSudeste, num)) {
-			return sudeste;
-		} else if (Util.contains(visaoSudoeste, num)) {
-			return sudoeste;
-		} else if (Util.contains(visaoNordeste, num)) {
-			return nordeste;
-		} else if (Util.contains(visaoNoroeste, num)) {
-			return noroeste;
-		} else
-			return 0;
+	// Verifica se tem algum poupador. Se tiver, vai atrás dele
+	public int buscarPoupador() {
+		int indicePoupador = Util.indexOf(visao, poupador);
+		return (indicePoupador != -1) ? descobrirDirecao("visao", indicePoupador) : 0;
 	}
 
 	// Função principal
 	public int acao() {
 		atualizarVariaveis();
 
-		int persegue = perseguirPoupador(visao);
-		System.out.println(persegue);
-
-		return (persegue != 0) ? moverParaDirecao(persegue) : moverParaDirecao((int) (Math.random() * 5));
+		int poupador = buscarPoupador();
+		if (poupador != 0) {
+			return moverParaDirecao(poupador);
+		} else {
+			return moverParaDirecao((int) (Math.random() * 5));
+		}
 
 	}
 
