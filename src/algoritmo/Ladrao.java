@@ -1,6 +1,5 @@
 package algoritmo;
 
-import java.util.Arrays;
 import java.util.Random;
 
 public class Ladrao extends ProgramaLadrao {
@@ -58,6 +57,7 @@ public class Ladrao extends ProgramaLadrao {
 			return direcao;
 	}
 
+	// Verifica se tem algum poupador na visão. Se tiver, vai atrás dele
 	public int perseguirPoupador(int[] visao) {
 		// Buscar por poupadores
 		int indicePoupador = Util.indexOf(visao, poupador);
