@@ -1,51 +1,72 @@
 package algoritmo;
 
-import java.util.Arrays;
 import java.util.Random;
 
 public class Ladrao extends ProgramaLadrao {
+	// Códigos da visão
+	int ladrao = 200, poupador = 100, pasta = 5, moeda = 4, banco = 3, parede = 1, vazia = 0, fora = -1, semvisao = -2;
 
-	public Ladrao() {
-		int[][] direcoes = new int[][] { { new Random().nextBoolean() ? 1 : 4, 1, new Random().nextBoolean() ? 1 : 3 },
-				{ 4, (int) (Math.random() * 5), 3 },
-				{ new Random().nextBoolean() ? 2 : 4, 2, new Random().nextBoolean() ? 2 : 3 } };
+	// Códigos de movimentação
+	int norte = 1, sul = 2, leste = 3, oeste = 4;
+	int nordeste = new Random().nextBoolean() ? norte : leste;
+	int noroeste = new Random().nextBoolean() ? norte : oeste;
+	int sudeste = new Random().nextBoolean() ? sul : leste;
+	int sudoeste = new Random().nextBoolean() ? sul : oeste;
+
+	// Códigos da visão
+	int[] visaoNorte = { 2, 7 };
+	int[] visaoSul = { 16, 21 };
+	int[] visaoLeste = { 12, 13 };
+	int[] visaoOeste = { 10, 11 };
+	int[] visaoNordeste = { 3, 4, 8, 9 };
+	int[] visaoNoroeste = { 0, 1, 5, 6 };
+	int[] visaoSudeste = { 17, 18, 22, 23 };
+	int[] visaoSudoeste = { 14, 15, 19, 20 };
+
+	int[] visao;
+	int[] olfato;
+	int moedas;
+	int roubos;
+
+	public void atualizarVariaveis() {
+		if (sensor.getNumeroDeMoedas() > moedas) {
+			roubos++;
+			moedas = sensor.getNumeroDeMoedas();
+		}
+		visao = sensor.getVisaoIdentificacao();
+		olfato = sensor.getAmbienteOlfatoLadrao();
 	}
 
-	// Converte array linear para bidimensional
-	public int[][] converterArray(int[] original) {
-		// Passo 1 - adicionar posição do ladrão
-		int[] larger = new int[original.length + 1];
-		for (int i = 0; i < original.length + 1; i++) {
-			if (i < original.length / 2)
-				larger[i] = original[i];
-			else if (i == original.length / 2)
-				larger[i] = -3;
-			else
-				larger[i] = original[i - 1];
-		}
-		original = larger;
+	public int moverParaDirecao(int direcao) {
+		int refletida = refletirObstaculos(direcao);
 
-		// Passo 2 - converter para array bidimensional
-		int dimension = (int) Math.sqrt(original.length);
-		int[][] bidimensional = new int[dimension][dimension];
-		for (int i = 0; i < dimension; i++) {
-			for (int j = 0; j < dimension; j++) {
-				bidimensional[i][j] = original[i * dimension + j];
-			}
-		}
+		if (refletida != direcao) {
+			System.out.println("Refletiu");
+			return refletida;
+		} else
+			return direcao;
+	}
 
-		return bidimensional;
+	// Verifica se a direção que o usuário quer se mover não é vazia ou um poupador.
+	// Caso não seja, retorna outra direção aleatória
+	public int refletirObstaculos(int direcao) {
+		if (direcao == norte && (visao[visaoNorte[0]] != vazia || visao[visaoNorte[0]] != poupador)) {
+			return Util.selecionarAleatorio(new int[] { sul, leste, oeste });
+		} else if (direcao == sul && (visao[visaoSul[0]] != vazia || visao[visaoSul[0]] != poupador)) {
+			return Util.selecionarAleatorio(new int[] { norte, leste, oeste });
+		} else if (direcao == leste && (visao[visaoLeste[0]] != vazia || visao[visaoLeste[0]] != poupador)) {
+			return Util.selecionarAleatorio(new int[] { norte, sul, oeste });
+		} else if (direcao == oeste && (visao[visaoOeste[0]] != vazia || visao[visaoOeste[0]] != poupador)) {
+			return Util.selecionarAleatorio(new int[] { norte, sul, leste });
+		} else
+			return direcao;
 	}
 
 	// Função principal
 	public int acao() {
-		int[][] visao = converterArray(sensor.getVisaoIdentificacao());
-		int[][] olfato = converterArray(sensor.getAmbienteOlfatoLadrao());
+		atualizarVariaveis();
 
-		System.out.println("Visão: " + Arrays.deepToString(visao));
-		System.out.println("Olfato: " + Arrays.deepToString(olfato));
-
-		return (int) (Math.random() * 5);
+		return moverParaDirecao((int) (Math.random() * 5));
 	}
 
 }
