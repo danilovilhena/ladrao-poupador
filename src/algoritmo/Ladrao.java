@@ -3,25 +3,27 @@ package algoritmo;
 import java.util.Random;
 
 public class Ladrao extends ProgramaLadrao {
+	int timerGlobal = 0;
 	// Códigos da visão
-	int ladrao = 200, poupador = 110, pasta = 5, moeda = 4, banco = 3, parede = 1, vazia = 0, fora = -1, semvisao = -2;
+	final int LADRAO = 200, POUPADOR = 110, PASTA = 5, MOEDA = 4, BANCO = 3, PAREDE = 1, VAZIA = 0, FORA = -1,
+			SEMVISAO = -2;
 
 	// Códigos de movimentação
-	int norte = 1, sul = 2, leste = 3, oeste = 4;
-	int nordeste = new Random().nextBoolean() ? norte : leste;
-	int noroeste = new Random().nextBoolean() ? norte : oeste;
-	int sudeste = new Random().nextBoolean() ? sul : leste;
-	int sudoeste = new Random().nextBoolean() ? sul : oeste;
+	final int NORTE = 1, SUL = 2, LESTE = 3, OESTE = 4;
+	int nordeste = new Random().nextBoolean() ? NORTE : LESTE;
+	int noroeste = new Random().nextBoolean() ? NORTE : OESTE;
+	int sudeste = new Random().nextBoolean() ? SUL : LESTE;
+	int sudoeste = new Random().nextBoolean() ? SUL : OESTE;
 
 	// Códigos da visão
-	int[] visaoNorte = { 2, 7 };
-	int[] visaoSul = { 16, 21 };
-	int[] visaoLeste = { 12, 13 };
-	int[] visaoOeste = { 10, 11 };
-	int[] visaoNordeste = { 3, 4, 8, 9 };
-	int[] visaoNoroeste = { 0, 1, 5, 6 };
-	int[] visaoSudeste = { 17, 18, 22, 23 };
-	int[] visaoSudoeste = { 14, 15, 19, 20 };
+	final int[] VISAO_NORTE = { 2, 7 };
+	final int[] VISAO_SUL = { 16, 21 };
+	final int[] VISAO_LESTE = { 12, 13 };
+	final int[] VISAO_OESTE = { 10, 11 };
+	final int[] VISAO_NORDESTE = { 3, 4, 8, 9 };
+	final int[] VISAO_NOROESTE = { 0, 1, 5, 6 };
+	final int[] VISAO_SUDESTE = { 17, 18, 22, 23 };
+	final int[] VISAO_SUDOESTE = { 14, 15, 19, 20 };
 
 	// Códigos do olfato
 	int olfatoNorte = 1;
@@ -55,14 +57,14 @@ public class Ladrao extends ProgramaLadrao {
 	// Verifica se a direção que o usuário quer se mover não é vazia ou um poupador.
 	// Caso não seja, retorna outra direção aleatória
 	public int refletirObstaculos(int direcao) {
-		if (direcao == norte && (visao[visaoNorte[0]] != vazia || visao[visaoNorte[0]] != poupador)) {
-			return Util.selecionarAleatorio(new int[] { sul, leste, oeste });
-		} else if (direcao == sul && (visao[visaoSul[0]] != vazia || visao[visaoSul[0]] != poupador)) {
-			return Util.selecionarAleatorio(new int[] { norte, leste, oeste });
-		} else if (direcao == leste && (visao[visaoLeste[0]] != vazia || visao[visaoLeste[0]] != poupador)) {
-			return Util.selecionarAleatorio(new int[] { norte, sul, oeste });
-		} else if (direcao == oeste && (visao[visaoOeste[0]] != vazia || visao[visaoOeste[0]] != poupador)) {
-			return Util.selecionarAleatorio(new int[] { norte, sul, leste });
+		if (direcao == NORTE && (visao[VISAO_NORTE[0]] != VAZIA || visao[VISAO_NORTE[0]] != POUPADOR)) {
+			return Util.selecionarAleatorio(new int[] { SUL, LESTE, OESTE });
+		} else if (direcao == SUL && (visao[VISAO_SUL[0]] != VAZIA || visao[VISAO_SUL[0]] != POUPADOR)) {
+			return Util.selecionarAleatorio(new int[] { NORTE, LESTE, OESTE });
+		} else if (direcao == LESTE && (visao[VISAO_LESTE[0]] != VAZIA || visao[VISAO_LESTE[0]] != POUPADOR)) {
+			return Util.selecionarAleatorio(new int[] { NORTE, SUL, OESTE });
+		} else if (direcao == OESTE && (visao[VISAO_OESTE[0]] != VAZIA || visao[VISAO_OESTE[0]] != POUPADOR)) {
+			return Util.selecionarAleatorio(new int[] { NORTE, SUL, LESTE });
 		} else
 			return direcao;
 	}
@@ -70,33 +72,33 @@ public class Ladrao extends ProgramaLadrao {
 	// Descobre a direção com base nos arrays de visão ou de olfato
 	public int descobrirDirecao(String arr, int num) {
 		if (arr == "visao") {
-			if (Util.contains(visaoNorte, num)) {
-				return norte;
-			} else if (Util.contains(visaoSul, num)) {
-				return sul;
-			} else if (Util.contains(visaoLeste, num)) {
-				return leste;
-			} else if (Util.contains(visaoOeste, num)) {
-				return oeste;
-			} else if (Util.contains(visaoSudeste, num)) {
+			if (Util.contains(VISAO_NORTE, num)) {
+				return NORTE;
+			} else if (Util.contains(VISAO_SUL, num)) {
+				return SUL;
+			} else if (Util.contains(VISAO_LESTE, num)) {
+				return LESTE;
+			} else if (Util.contains(VISAO_OESTE, num)) {
+				return OESTE;
+			} else if (Util.contains(VISAO_SUDESTE, num)) {
 				return sudeste;
-			} else if (Util.contains(visaoSudoeste, num)) {
+			} else if (Util.contains(VISAO_SUDOESTE, num)) {
 				return sudoeste;
-			} else if (Util.contains(visaoNordeste, num)) {
+			} else if (Util.contains(VISAO_NORDESTE, num)) {
 				return nordeste;
-			} else if (Util.contains(visaoNoroeste, num)) {
+			} else if (Util.contains(VISAO_NOROESTE, num)) {
 				return noroeste;
 			} else
 				return 0;
 		} else {
 			if (olfatoNorte == num) {
-				return norte;
+				return NORTE;
 			} else if (olfatoSul == num) {
-				return sul;
+				return SUL;
 			} else if (olfatoLeste == num) {
-				return leste;
+				return LESTE;
 			} else if (olfatoOeste == num) {
-				return oeste;
+				return OESTE;
 			} else if (olfatoSudeste == num) {
 				return sudeste;
 			} else if (olfatoSudoeste == num) {
@@ -112,14 +114,35 @@ public class Ladrao extends ProgramaLadrao {
 
 	// Verifica se tem algum poupador. Se tiver, vai atrás dele
 	public int buscarPoupador() {
-		int indicePoupador = Util.indexOf(visao, poupador);
+		int indicePoupador = Util.indexOf(visao, POUPADOR);
 		return (indicePoupador != -1) ? descobrirDirecao("visao", indicePoupador) : 0;
+	}
+
+	public void printVisaoAgente() {
+		int counter = 0;
+		int mainCounter = 0;
+		System.out.println(sensor.getPosicao().getX() + " " + sensor.getPosicao().getY() + "\n");
+		for (int i : sensor.getVisaoIdentificacao()) {
+			if (mainCounter == 12) {
+				System.out.print("x ");
+				counter++;
+			}
+			if (counter == 5) {
+				System.out.println();
+				counter = 0;
+			}
+			System.out.print(i + " ");
+			mainCounter++;
+			counter++;
+
+		}
+		System.out.println("\n");
+
 	}
 
 	// Função principal
 	public int acao() {
 		atualizarVariaveis();
-
 		int poupador = buscarPoupador();
 		if (poupador != 0) {
 			return moverParaDirecao(poupador);
