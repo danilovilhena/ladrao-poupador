@@ -1,10 +1,11 @@
 package algoritmo;
 
+import java.util.Arrays;
 import java.util.Random;
 
 public class Ladrao extends ProgramaLadrao {
 	// Códigos da visão
-	int ladrao = 200, poupador = 100, pasta = 5, moeda = 4, banco = 3, parede = 1, vazia = 0, fora = -1, semvisao = -2;
+	int ladrao = 200, poupador = 110, pasta = 5, moeda = 4, banco = 3, parede = 1, vazia = 0, fora = -1, semvisao = -2;
 
 	// Códigos de movimentação
 	int norte = 1, sul = 2, leste = 3, oeste = 4;
@@ -39,12 +40,7 @@ public class Ladrao extends ProgramaLadrao {
 
 	public int moverParaDirecao(int direcao) {
 		int refletida = refletirObstaculos(direcao);
-
-		if (refletida != direcao) {
-			System.out.println("Refletiu");
-			return refletida;
-		} else
-			return direcao;
+		return (refletida != direcao) ? refletida : direcao;
 	}
 
 	// Verifica se a direção que o usuário quer se mover não é vazia ou um poupador.
@@ -62,11 +58,47 @@ public class Ladrao extends ProgramaLadrao {
 			return direcao;
 	}
 
+	public int perseguirPoupador(int[] visao) {
+		// Buscar por poupadores
+		int indicePoupador = Util.indexOf(visao, poupador);
+
+		if (indicePoupador != -1) {
+			int desc = descobrirDirecao(indicePoupador);
+			return desc;
+		} else
+			return 0;
+	}
+
+	public int descobrirDirecao(int num) {
+		if (Util.contains(visaoNorte, num)) {
+			return norte;
+		} else if (Util.contains(visaoSul, num)) {
+			return sul;
+		} else if (Util.contains(visaoLeste, num)) {
+			return leste;
+		} else if (Util.contains(visaoOeste, num)) {
+			return oeste;
+		} else if (Util.contains(visaoSudeste, num)) {
+			return sudeste;
+		} else if (Util.contains(visaoSudoeste, num)) {
+			return sudoeste;
+		} else if (Util.contains(visaoNordeste, num)) {
+			return nordeste;
+		} else if (Util.contains(visaoNoroeste, num)) {
+			return noroeste;
+		} else
+			return 0;
+	}
+
 	// Função principal
 	public int acao() {
 		atualizarVariaveis();
 
-		return moverParaDirecao((int) (Math.random() * 5));
+		int persegue = perseguirPoupador(visao);
+		System.out.println(persegue);
+
+		return (persegue != 0) ? moverParaDirecao(persegue) : moverParaDirecao((int) (Math.random() * 5));
+
 	}
 
 }
