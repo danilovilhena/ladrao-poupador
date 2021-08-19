@@ -1,11 +1,14 @@
 package algoritmo;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Random;
 
 public class Ladrao extends ProgramaLadrao {
 	int timerGlobal = 0;
 	// Códigos da visão
-	final int LADRAO = 200, POUPADOR = 110, PASTA = 5, MOEDA = 4, BANCO = 3, PAREDE = 1, VAZIA = 0, FORA = -1,
+	final int LADRAO = 210, POUPADOR = 110, PASTA = 5, MOEDA = 4, BANCO = 3, PAREDE = 1, VAZIA = 0, FORA = -1,
 			SEMVISAO = -2;
 
 	// Códigos de movimentação
@@ -143,13 +146,59 @@ public class Ladrao extends ProgramaLadrao {
 	// Função principal
 	public int acao() {
 		atualizarVariaveis();
+
 		int poupador = buscarPoupador();
 		if (poupador != 0) {
 			return moverParaDirecao(poupador);
 		} else {
-			return moverParaDirecao((int) (Math.random() * 5));
+			return moverParaDirecao(analisarVisao());
 		}
 
 	}
 
+	public int analisarVisao() {
+		// Valores
+		HashMap<Integer, Integer> valores = new HashMap<Integer, Integer>();
+		valores.put(230, 0); // Ladrão
+		valores.put(220, 0); // Ladrão
+		valores.put(210, 0); // Ladrão
+		valores.put(200, 0); // Ladrão
+		valores.put(110, 2); // Poupador
+		valores.put(100, 2); // Poupador
+		valores.put(5, -1); // Pastilha
+		valores.put(4, 0); // Moeda
+		valores.put(3, -1); // Banco
+		valores.put(1, -2); // Parede
+		valores.put(0, 2); // Célula vazia
+		valores.put(-1, -2); // Fora do ambiente
+		valores.put(-2, -1); // Sem visão
+
+		// Direções
+		int[] cima = new int[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+		int[] baixo = new int[] { 14, 15, 16, 17, 18, 19, 20, 21, 22, 23 };
+		int[] direita = new int[] { 3, 4, 8, 9, 12, 13, 17, 18, 22, 23 };
+		int[] esquerda = new int[] { 0, 1, 5, 6, 10, 11, 14, 15, 19, 20 };
+		int[][] direcoes = new int[][] { cima, baixo, direita, esquerda };
+
+		// Pesos
+		int[] maiorPeso = new int[] { 6, 7, 8, 11, 12, 15, 16, 17 };
+
+		// Avaliações
+		int[] resultados = new int[] { 0, 0, 0, 0 }; // Cima, Baixo, Direita, Esquerda
+
+		// Analisar direções
+		for (int i = 0; i < direcoes.length; i++) {
+			int[] direcao = direcoes[i];
+
+			for (int j = 0; j < direcao.length; j++) {
+				int result = valores.get(visao[direcao[j]]);
+				resultados[i] += Util.contains(maiorPeso, direcao[j]) ? result * 2 : result;
+			}
+		}
+
+		double[] probabilidades = Util.transformarEmProbabilidade(resultados);
+		int indice = Util.selecionarProbabilidade(probabilidades);
+
+		return indice + 1;
+	}
 }
