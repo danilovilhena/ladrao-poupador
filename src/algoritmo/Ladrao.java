@@ -118,8 +118,21 @@ public class Ladrao extends ProgramaLadrao {
 	// Verifica se tem algum poupador. Se tiver, vai atrás dele
 	public int buscarPoupador() {
 		int indicePoupador = Util.indexOf(visao, POUPADOR);
-		boolean vaiPerseguir = Util.selecionarProbabilidade(new double[] { 0.75, 0.25 }) == 0;
+		boolean vaiPerseguir = Util.selecionarProbabilidade(new double[] { 0.95, 0.5 }) == 0;
 		return (indicePoupador != -1 && vaiPerseguir) ? descobrirDirecao("visao", indicePoupador) : 0;
+	}
+
+	// Função principal
+	public int acao() {
+		atualizarVariaveis();
+
+		int poupador = buscarPoupador();
+		if (poupador != 0) {
+			return moverParaDirecao(poupador);
+		} else {
+			return moverParaDirecao(analisarVisao());
+		}
+
 	}
 
 	public void printVisaoAgente() {
@@ -144,19 +157,6 @@ public class Ladrao extends ProgramaLadrao {
 
 	}
 
-	// Função principal
-	public int acao() {
-		atualizarVariaveis();
-
-		int poupador = buscarPoupador();
-		if (poupador != 0) {
-			return moverParaDirecao(poupador);
-		} else {
-			return moverParaDirecao(analisarVisao());
-		}
-
-	}
-
 	public int analisarVisao() {
 		// Valores
 		HashMap<Integer, Integer> valores = new HashMap<Integer, Integer>();
@@ -164,8 +164,8 @@ public class Ladrao extends ProgramaLadrao {
 		valores.put(220, 0); // Ladrão
 		valores.put(210, 0); // Ladrão
 		valores.put(200, 0); // Ladrão
-		valores.put(110, 2); // Poupador
-		valores.put(100, 2); // Poupador
+		valores.put(110, 20); // Poupador
+		valores.put(100, 20); // Poupador
 		valores.put(5, -1); // Pastilha
 		valores.put(4, 0); // Moeda
 		valores.put(3, -1); // Banco
@@ -188,6 +188,12 @@ public class Ladrao extends ProgramaLadrao {
 		int[] resultados = new int[] { 0, 0, 0, 0 }; // Cima, Baixo, Direita, Esquerda
 
 		// Analisar direções
+
+		// TODO: Implement forEach with maiorPeso Array to find possible blockers
+		// If detected: run probability to exclude this direction (>=0.9)
+
+		// TODO: Implement better RandomCollection
+
 		for (int i = 0; i < direcoes.length; i++) {
 			int[] direcao = direcoes[i];
 
@@ -197,7 +203,9 @@ public class Ladrao extends ProgramaLadrao {
 			}
 		}
 
+		// System.out.println(Arrays.toString(resultados) + "\n");
 		double[] probabilidades = Util.transformarEmProbabilidade(resultados);
+		// System.out.println(Arrays.toString(probabilidades) + "\n");
 		int indice = Util.selecionarProbabilidade(probabilidades);
 
 		return indice + 1;
