@@ -1,12 +1,12 @@
 package algoritmo;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Random;
 
 public class Ladrao extends ProgramaLadrao {
 	int timerGlobal = 0;
+
 	// Códigos da visão
 	final int LADRAO = 210, POUPADOR = 110, PASTA = 5, MOEDA = 4, BANCO = 3, PAREDE = 1, VAZIA = 0, FORA = -1,
 			SEMVISAO = -2;
@@ -42,6 +42,7 @@ public class Ladrao extends ProgramaLadrao {
 	int[] olfato;
 	int moedas;
 	int roubos;
+	int[][] visitados = new int[31][31];
 
 	public void atualizarVariaveis() {
 		if (sensor.getNumeroDeMoedas() > moedas) {
@@ -118,7 +119,7 @@ public class Ladrao extends ProgramaLadrao {
 	// Verifica se tem algum poupador. Se tiver, vai atrás dele
 	public int buscarPoupador() {
 		int indicePoupador = Util.indexOf(visao, POUPADOR);
-		boolean vaiPerseguir = Util.selecionarProbabilidade(new double[] { 0.95, 0.5 }) == 0;
+		boolean vaiPerseguir = Util.selecionarProbabilidade(new double[] { 0.95, 0.05 }) == 0;
 		return (indicePoupador != -1 && vaiPerseguir) ? descobrirDirecao("visao", indicePoupador) : 0;
 	}
 
@@ -127,12 +128,7 @@ public class Ladrao extends ProgramaLadrao {
 		atualizarVariaveis();
 
 		int poupador = buscarPoupador();
-		if (poupador != 0) {
-			return moverParaDirecao(poupador);
-		} else {
-			return moverParaDirecao(analisarVisao());
-		}
-
+		return (poupador == 0) ? moverParaDirecao(poupador) : moverComMigalhas();
 	}
 
 	public void printVisaoAgente() {
@@ -155,6 +151,15 @@ public class Ladrao extends ProgramaLadrao {
 		}
 		System.out.println("\n");
 
+	}
+
+	public void printVisitados() {
+		for (int row = 0; row < visitados.length; row++) {
+			for (int col = 0; col < visitados[row].length; col++) {
+				System.out.printf("%2d", visitados[row][col]); // change the %5d to however much space you want
+			}
+			System.out.println(); // Makes a new row
+		}
 	}
 
 	public int analisarVisao() {
@@ -209,5 +214,65 @@ public class Ladrao extends ProgramaLadrao {
 		int indice = Util.selecionarProbabilidade(probabilidades);
 
 		return indice + 1;
+	}
+
+	public int moverComMigalhas() {
+		int x = (int) sensor.getPosicao().getX();
+		int y = (int) sensor.getPosicao().getY();
+		visitados[x][y]++;
+
+		int[] direcoes = new int[4];
+
+		// Cima
+		if (!(visao[7] == 0 || visao[7] == 100 || visao[7] == 110)) {
+			if (y == 0)
+				direcoes[0] = -1;
+			else {
+				visitados[x][y - 1] = -1;
+				direcoes[0] = visitados[x][y - 1];
+			}
+		}
+
+		// Baixo
+		if (!(visao[16] == 0 || visao[16] == 100 || visao[16] == 110)) {
+			visitados[x][y + 1] = -1;
+			direcoes[1] = visitados[x][y + 1];
+		}
+
+		// Direita
+		if (!(visao[12] == 0 || visao[12] == 100 || visao[12] == 110)) {
+			visitados[x + 1][y] = -1;
+			direcoes[2] = visitados[x + 1][y];
+		}
+
+		// Esquerda
+		if (!(visao[11] == 0 || visao[11] == 100 || visao[11] == 110)) {
+			if (x == 0)
+				direcoes[3] = -1;
+			else {
+				visitados[x - 1][y] = -1;
+				direcoes[0] = visitados[x - 1][y];
+			}
+		}
+
+		int smallest = 999;
+		for (int i = 0; i < direcoes.length; i++) {
+			if (direcoes[i] < smallest && direcoes[i] != -1) {
+				smallest = direcoes[i];
+			}
+		}
+
+		ArrayList<Integer> indices = new ArrayList<Integer>();
+		for (int i = 0; i < direcoes.length; i++) {
+			if (direcoes[i] == smallest)
+				indices.add(i);
+		}
+
+		int rnd = new Random().nextInt(indices.size());
+
+		System.out.println("-----------");
+		printVisitados();
+
+		return indices.get(rnd) + 1;
 	}
 }

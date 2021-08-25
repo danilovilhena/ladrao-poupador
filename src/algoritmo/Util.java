@@ -1,6 +1,7 @@
 package algoritmo;
 
-import java.util.Arrays;
+import java.awt.Point;
+import java.util.ArrayList;
 import java.util.Random;
 
 import estruturas.ColecaoAleatoria;
@@ -71,6 +72,22 @@ public class Util {
     public static boolean contains(int[] arr, int element) {
         for (int i = 0; i < arr.length; i++) {
             if (arr[i] == element)
+                return true;
+        }
+
+        return false;
+    }
+
+    public static boolean isSamePoint(Point a, Point b) {
+        if (((int) a.getX() == (int) b.getX()) && ((int) a.getY() == (int) b.getY())) {
+            return true;
+        } else
+            return false;
+    }
+
+    public static boolean containsPoint(ArrayList<Point> arr, Point element) {
+        for (int i = 0; i < arr.size(); i++) {
+            if (isSamePoint(arr.get(i), element))
                 return true;
         }
 
