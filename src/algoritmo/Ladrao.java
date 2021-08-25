@@ -119,14 +119,16 @@ public class Ladrao extends ProgramaLadrao {
 	// Verifica se tem algum poupador. Se tiver, vai atrás dele
 	public int buscarPoupador() {
 		int indicePoupador = Util.indexOf(visao, POUPADOR);
-		boolean vaiPerseguir = Util.selecionarProbabilidade(new double[] { 0.95, 0.5 }) == 0;
+		boolean vaiPerseguir = Util.selecionarProbabilidade(new double[] { 0.95, 0.05 }) == 0;
 		return (indicePoupador != -1 && vaiPerseguir) ? descobrirDirecao("visao", indicePoupador) : 0;
 	}
 
 	// Função principal
 	public int acao() {
 		atualizarVariaveis();
-		return moverComMigalhas();
+
+		int poupador = buscarPoupador();
+		return (poupador == 0) ? moverParaDirecao(poupador) : moverComMigalhas();
 	}
 
 	public void printVisaoAgente() {
