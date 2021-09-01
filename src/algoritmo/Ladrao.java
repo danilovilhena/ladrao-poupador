@@ -44,6 +44,7 @@ public class Ladrao extends ProgramaLadrao {
 	int roubos;
 	int[][] visitados = new int[31][31];
 
+	// Funções auxiliares
 	public void atualizarVariaveis() {
 		if (sensor.getNumeroDeMoedas() > moedas) {
 			roubos++;
@@ -51,6 +52,15 @@ public class Ladrao extends ProgramaLadrao {
 		}
 		visao = sensor.getVisaoIdentificacao();
 		olfato = sensor.getAmbienteOlfatoLadrao();
+	}
+
+	public void printVisitados() {
+		for (int row = 0; row < visitados.length; row++) {
+			for (int col = 0; col < visitados[row].length; col++) {
+				System.out.printf("%3d", visitados[row][col]);
+			}
+			System.out.println(); // Faz uma nova fileira
+		}
 	}
 
 	public int moverParaDirecao(int direcao) {
@@ -118,48 +128,13 @@ public class Ladrao extends ProgramaLadrao {
 
 	// Verifica se tem algum poupador. Se tiver, vai atrás dele
 	public int buscarPoupador() {
-		int indicePoupador = Util.indexOf(visao, POUPADOR);
+		int indicePoupador = Util.indexOf(visao, 100);
+		if (indicePoupador == -1)
+			indicePoupador = Util.indexOf(visao, 110);
+
 		boolean vaiPerseguir = Util.selecionarProbabilidade(new double[] { 0.95, 0.05 }) == 0;
+
 		return (indicePoupador != -1 && vaiPerseguir) ? descobrirDirecao("visao", indicePoupador) : 0;
-	}
-
-	// Função principal
-	public int acao() {
-		atualizarVariaveis();
-
-		int poupador = buscarPoupador();
-		return (poupador == 0) ? moverParaDirecao(poupador) : moverComMigalhas();
-	}
-
-	public void printVisaoAgente() {
-		int counter = 0;
-		int mainCounter = 0;
-		System.out.println(sensor.getPosicao().getX() + " " + sensor.getPosicao().getY() + "\n");
-		for (int i : sensor.getVisaoIdentificacao()) {
-			if (mainCounter == 12) {
-				System.out.print("x ");
-				counter++;
-			}
-			if (counter == 5) {
-				System.out.println();
-				counter = 0;
-			}
-			System.out.print(i + " ");
-			mainCounter++;
-			counter++;
-
-		}
-		System.out.println("\n");
-
-	}
-
-	public void printVisitados() {
-		for (int row = 0; row < visitados.length; row++) {
-			for (int col = 0; col < visitados[row].length; col++) {
-				System.out.printf("%2d", visitados[row][col]); // change the %5d to however much space you want
-			}
-			System.out.println(); // Makes a new row
-		}
 	}
 
 	public int analisarVisao() {
@@ -231,17 +206,23 @@ public class Ladrao extends ProgramaLadrao {
 				visitados[x][y - 1] = -1;
 				direcoes[0] = visitados[x][y - 1];
 			}
+		} else {
+			direcoes[0] = visitados[x][y - 1];
 		}
 
 		// Baixo
 		if (!(visao[16] == 0 || visao[16] == 100 || visao[16] == 110)) {
 			visitados[x][y + 1] = -1;
 			direcoes[1] = visitados[x][y + 1];
+		} else {
+			direcoes[1] = visitados[x][y + 1];
 		}
 
 		// Direita
 		if (!(visao[12] == 0 || visao[12] == 100 || visao[12] == 110)) {
 			visitados[x + 1][y] = -1;
+			direcoes[2] = visitados[x + 1][y];
+		} else {
 			direcoes[2] = visitados[x + 1][y];
 		}
 
@@ -251,8 +232,10 @@ public class Ladrao extends ProgramaLadrao {
 				direcoes[3] = -1;
 			else {
 				visitados[x - 1][y] = -1;
-				direcoes[0] = visitados[x - 1][y];
+				direcoes[3] = visitados[x - 1][y];
 			}
+		} else {
+			direcoes[3] = visitados[x - 1][y];
 		}
 
 		int smallest = 999;
@@ -274,5 +257,13 @@ public class Ladrao extends ProgramaLadrao {
 		printVisitados();
 
 		return indices.get(rnd) + 1;
+	}
+
+	// Função principal
+	public int acao() {
+		atualizarVariaveis();
+
+		int poupador = buscarPoupador();
+		return (poupador != 0) ? moverParaDirecao(poupador) : moverComMigalhas();
 	}
 }
