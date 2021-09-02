@@ -176,6 +176,9 @@ public class Ladrao extends ProgramaLadrao {
 				direcoes[0] = visitados[x][y - 1];
 			}
 		} else {
+			if (visitados[x][y - 1] == -1) {
+				visitados[x][y - 1] = 0;
+			}
 			direcoes[0] = visitados[x][y - 1];
 		}
 
@@ -184,6 +187,9 @@ public class Ladrao extends ProgramaLadrao {
 			visitados[x][y + 1] = -1;
 			direcoes[1] = visitados[x][y + 1];
 		} else {
+			if (visitados[x][y + 1] == -1) {
+				visitados[x][y + 1] = 0;
+			}
 			direcoes[1] = visitados[x][y + 1];
 		}
 
@@ -192,6 +198,9 @@ public class Ladrao extends ProgramaLadrao {
 			visitados[x + 1][y] = -1;
 			direcoes[2] = visitados[x + 1][y];
 		} else {
+			if (visitados[x + 1][y] == -1) {
+				visitados[x + 1][y] = 0;
+			}
 			direcoes[2] = visitados[x + 1][y];
 		}
 
@@ -204,10 +213,13 @@ public class Ladrao extends ProgramaLadrao {
 				direcoes[3] = visitados[x - 1][y];
 			}
 		} else {
+			if (visitados[x - 1][y] == -1) {
+				visitados[x - 1][y] = 0;
+			}
 			direcoes[3] = visitados[x - 1][y];
 		}
 
-		int smallest = 999;
+		int smallest = Integer.MAX_VALUE;
 		for (int i = 0; i < direcoes.length; i++) {
 			if (direcoes[i] < smallest && direcoes[i] != -1) {
 				smallest = direcoes[i];
