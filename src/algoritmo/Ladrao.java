@@ -138,11 +138,6 @@ public class Ladrao extends ProgramaLadrao {
 
 		// Analisar direções
 
-		// TODO: Implement forEach with maiorPeso Array to find possible blockers
-		// If detected: run probability to exclude this direction (>=0.9)
-
-		// TODO: Implement better RandomCollection
-
 		for (int i = 0; i < direcoes.length; i++) {
 			int[] direcao = direcoes[i];
 

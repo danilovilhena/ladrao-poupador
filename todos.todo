@@ -1,0 +1,8 @@
+[ ] Atualizar o array visitados
+    [ ] Detalhar array visitados com obstáculos fixos (banco, moeda, pastilha)
+    [ ] Passar a visão inteira para o visitados
+[ ] Preparar funções para o agente baseado em objetivos
+    [ ] Função de buscar o banco no visitados 
+    [ ] Função de buscar um grupo de moedas no visitados
+[ ] Pensar em alguns objetivos pro ladrão
+[ ] Diferenciar caminhos não descobertos de caminhos disponíveis
