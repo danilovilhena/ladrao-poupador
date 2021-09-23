@@ -113,7 +113,6 @@ public class Ladrao extends ProgramaLadrao {
 
 		// System.out.println(Arrays.toString(resultados) + "\n");
 		double[] probabilidades = Util.transformarEmProbabilidade(resultados);
-		// System.out.println(Arrays.toString(probabilidades) + "\n");
 		int indice = Util.selecionarProbabilidade(probabilidades);
 
 		return indice + 1;
@@ -193,16 +192,14 @@ public class Ladrao extends ProgramaLadrao {
 		}
 
 		int rnd = new Random().nextInt(indices.size());
-
-		System.out.println("-----------");
 		printVisitados();
-
 		return indices.get(rnd) + 1;
 	}
 
 	// Função principal
 	public int acao() {
 		atualizarVariaveis();
+		atualizarMigalhas();
 
 		int poupador = buscarPoupador();
 		return (poupador != 0) ? moverParaDirecao(poupador) : moverComMigalhas();
@@ -216,6 +213,30 @@ public class Ladrao extends ProgramaLadrao {
 		}
 		visao = sensor.getVisaoIdentificacao();
 		olfato = sensor.getAmbienteOlfatoLadrao();
+	}
+
+	public void atualizarMigalhas() {
+		int x = (int) sensor.getPosicao().getX();
+		int y = (int) sensor.getPosicao().getY();
+
+		int d = 0;
+		for (int i = -2; i <= 2; i++) {
+			for (int j = -2; j <= 2; j++) {
+				try {
+					if (!(i == 0 && j == 0) && d < 24) {
+						if (!(visao[d] == 0 || visao[d] == 100 || visao[d] == 110)) {
+							visitados[x + j][y + i] = -1;
+						} else {
+							if (visao[d] == 0 && visitados[x + j][y + i] == -1) {
+								visitados[x + j][y + i] = 0;
+							}
+						}
+					}
+				} catch (Exception e) {
+				}
+				d++;
+			}
+		}
 	}
 
 	public void printVisitados() {
