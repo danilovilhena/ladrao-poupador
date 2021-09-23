@@ -1,14 +1,16 @@
 package algoritmo;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Random;
 
 public class Ladrao extends ProgramaLadrao {
 	int NORTE = 1, SUL = 2, LESTE = 3, OESTE = 4;
-	int timerGlobal = 0, moedas, roubos;
+	int timerGlobal = 0, moedas, roubos, x, y;
 	int[] visao, olfato;
 	int[][] visitados = new int[31][31];
+	ArrayList<Integer> visitadosLinear = new ArrayList<Integer>();
 
 	// Códigos da visão
 	final int[] VISAO_NORTE = { 2, 7 }, VISAO_SUL = { 16, 21 }, VISAO_LESTE = { 12, 13 }, VISAO_OESTE = { 10, 11 };
@@ -69,23 +71,18 @@ public class Ladrao extends ProgramaLadrao {
 		return (indicePoupador != -1 && vaiPerseguir) ? descobrirDirecao(indicePoupador) : 0;
 	}
 
-	// Protótipo de baseado em utilidades
-	public int analisarVisao() {
-		// Valores
-		HashMap<Integer, Integer> valores = new HashMap<Integer, Integer>();
-		valores.put(230, 0); // Ladrão
-		valores.put(220, 0); // Ladrão
-		valores.put(210, 0); // Ladrão
-		valores.put(200, 0); // Ladrão
-		valores.put(110, 20); // Poupador
-		valores.put(100, 20); // Poupador
-		valores.put(5, -1); // Pastilha
-		valores.put(4, 0); // Moeda
-		valores.put(3, -1); // Banco
-		valores.put(1, -2); // Parede
-		valores.put(0, 2); // Célula vazia
-		valores.put(-1, -2); // Fora do ambiente
-		valores.put(-2, -1); // Sem visão
+	// Relacionada à função moverComFelicidade
+	public boolean podeMover(int pos) {
+		return (visao[pos] == 0 || visao[pos] == 100 || visao[pos] == 110);
+	}
+
+	// Função baseada em utilidade
+	public int moverComFelicidade() {
+		// Pesos
+		HashMap<String, Integer> pesos = new HashMap<String, Integer>();
+		pesos.put("poupador", 100);
+		pesos.put("vazio", 10);
+		pesos.put("visitado", -1);
 
 		// Direções
 		int[] cima = new int[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
@@ -94,36 +91,48 @@ public class Ladrao extends ProgramaLadrao {
 		int[] esquerda = new int[] { 0, 1, 5, 6, 10, 11, 14, 15, 19, 20 };
 		int[][] direcoes = new int[][] { cima, baixo, direita, esquerda };
 
-		// Pesos
-		int[] maiorPeso = new int[] { 6, 7, 8, 11, 12, 15, 16, 17 };
+		// Cima, Baixo, Direita, Esquerda
+		int[] resultados = new int[] { 0, 0, 0, 0 };
 
-		// Avaliações
-		int[] resultados = new int[] { 0, 0, 0, 0 }; // Cima, Baixo, Direita, Esquerda
+		// Eliminar direções bloqueadas
+		if (!podeMover(7))
+			resultados[0] = -1;
+		if (!podeMover(16))
+			resultados[1] = -1;
+		if (!podeMover(11))
+			resultados[2] = -1;
+		if (!podeMover(12))
+			resultados[3] = -1;
 
 		// Analisar direções
-
 		for (int i = 0; i < direcoes.length; i++) {
-			int[] direcao = direcoes[i];
+			if (resultados[i] != -1) {
+				int[] direcao = direcoes[i];
 
-			for (int j = 0; j < direcao.length; j++) {
-				int result = valores.get(visao[direcao[j]]);
-				resultados[i] += Util.contains(maiorPeso, direcao[j]) ? result * 2 : result;
+				for (int j = 0; j < direcao.length; j++) {
+					if (visao[direcao[j]] == 0) {
+						if (visitadosLinear.get(direcao[j]) == 0) {
+							resultados[i] += pesos.get("vazio");
+						} else {
+							resultados[i] += pesos.get("visitado") * visitadosLinear.get(direcao[j]);
+						}
+					} else if (visao[direcao[j]] == 100 || visao[direcao[j]] == 110) {
+						resultados[i] += pesos.get("poupador");
+					}
+				}
+
 			}
 		}
 
-		// System.out.println(Arrays.toString(resultados) + "\n");
+		// Escolher com probabilidades
 		double[] probabilidades = Util.transformarEmProbabilidade(resultados);
-		int indice = Util.selecionarProbabilidade(probabilidades);
-
-		return indice + 1;
+		int direcao = Util.selecionarProbabilidade(probabilidades) + 1;
+		printVisitados();
+		return direcao;
 	}
 
 	// Função baseada em modelo
 	public int moverComMigalhas() {
-		int x = (int) sensor.getPosicao().getX();
-		int y = (int) sensor.getPosicao().getY();
-		visitados[x][y]++;
-
 		int[] direcoes = new int[4];
 
 		// Cima
@@ -201,8 +210,10 @@ public class Ladrao extends ProgramaLadrao {
 		atualizarVariaveis();
 		atualizarMigalhas();
 
-		int poupador = buscarPoupador();
-		return (poupador != 0) ? moverParaDirecao(poupador) : moverComMigalhas();
+		return moverComFelicidade();
+
+		// int poupador = buscarPoupador();
+		// return (poupador != 0) ? moverParaDirecao(poupador) : moverComMigalhas();
 	}
 
 	// Funções auxiliares
@@ -213,17 +224,18 @@ public class Ladrao extends ProgramaLadrao {
 		}
 		visao = sensor.getVisaoIdentificacao();
 		olfato = sensor.getAmbienteOlfatoLadrao();
+		x = (int) sensor.getPosicao().getX();
+		y = (int) sensor.getPosicao().getY();
 	}
 
 	public void atualizarMigalhas() {
-		int x = (int) sensor.getPosicao().getX();
-		int y = (int) sensor.getPosicao().getY();
-
 		int d = 0;
+		visitadosLinear.clear();
+		visitados[x][y]++;
 		for (int i = -2; i <= 2; i++) {
 			for (int j = -2; j <= 2; j++) {
 				try {
-					if (!(i == 0 && j == 0) && d < 24) {
+					if (!(i == 0 && j == 0) && d <= 24) {
 						if (!(visao[d] == 0 || visao[d] == 100 || visao[d] == 110)) {
 							visitados[x + j][y + i] = -1;
 						} else {
@@ -231,8 +243,10 @@ public class Ladrao extends ProgramaLadrao {
 								visitados[x + j][y + i] = 0;
 							}
 						}
+						visitadosLinear.add(visitados[x + j][y + i]);
 					}
 				} catch (Exception e) {
+					visitadosLinear.add(-100);
 				}
 				d++;
 			}
@@ -246,5 +260,6 @@ public class Ladrao extends ProgramaLadrao {
 			}
 			System.out.println(); // Faz uma nova fileira
 		}
+		System.out.println("------------");
 	}
 }
