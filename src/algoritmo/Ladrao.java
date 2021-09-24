@@ -210,16 +210,13 @@ public class Ladrao extends ProgramaLadrao {
 
 		int felicidade = moverComFelicidade();
 		if (felicidade != 0) {
-			System.out.println("Felicidade!");
 			return moverParaDirecao(felicidade);
 		}
 
 		int poupador = buscarPoupador();
 		if (poupador != 0) {
-			System.out.println("Poupador!");
 			return moverParaDirecao(poupador);
 		} else {
-			System.out.println("Migalhas!");
 			return moverComMigalhas();
 		}
 	}
