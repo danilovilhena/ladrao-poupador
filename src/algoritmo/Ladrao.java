@@ -80,9 +80,9 @@ public class Ladrao extends ProgramaLadrao {
 	public int moverComFelicidade() {
 		// Pesos
 		HashMap<String, Integer> pesos = new HashMap<String, Integer>();
-		pesos.put("poupador", 100);
-		pesos.put("vazio", 10);
-		pesos.put("visitado", -1);
+		pesos.put("poupador", 200);
+		pesos.put("vazio", 20);
+		pesos.put("visitado", -5);
 
 		// Direções
 		int[] cima = new int[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
@@ -126,9 +126,8 @@ public class Ladrao extends ProgramaLadrao {
 
 		// Escolher com probabilidades
 		double[] probabilidades = Util.transformarEmProbabilidade(resultados);
-		int direcao = Util.selecionarProbabilidade(probabilidades) + 1;
-		printVisitados();
-		return direcao;
+		int direcao = Util.selecionarProbabilidade(probabilidades);
+		return probabilidades[direcao] > 0.5 ? (direcao + 1) : 0;
 	}
 
 	// Função baseada em modelo
@@ -201,7 +200,6 @@ public class Ladrao extends ProgramaLadrao {
 		}
 
 		int rnd = new Random().nextInt(indices.size());
-		printVisitados();
 		return indices.get(rnd) + 1;
 	}
 
@@ -210,10 +208,20 @@ public class Ladrao extends ProgramaLadrao {
 		atualizarVariaveis();
 		atualizarMigalhas();
 
-		return moverComFelicidade();
+		int felicidade = moverComFelicidade();
+		if (felicidade != 0) {
+			System.out.println("Felicidade!");
+			return moverParaDirecao(felicidade);
+		}
 
-		// int poupador = buscarPoupador();
-		// return (poupador != 0) ? moverParaDirecao(poupador) : moverComMigalhas();
+		int poupador = buscarPoupador();
+		if (poupador != 0) {
+			System.out.println("Poupador!");
+			return moverParaDirecao(poupador);
+		} else {
+			System.out.println("Migalhas!");
+			return moverComMigalhas();
+		}
 	}
 
 	// Funções auxiliares
