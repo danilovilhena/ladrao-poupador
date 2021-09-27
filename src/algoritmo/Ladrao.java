@@ -1,13 +1,12 @@
 package algoritmo;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Random;
 
 public class Ladrao extends ProgramaLadrao {
 	int NORTE = 1, SUL = 2, LESTE = 3, OESTE = 4;
-	int timerGlobal = 0, moedas, roubos, x, y;
+	int moedas, roubos, x, y;
 	int[] visao, olfato;
 	int[][] visitados = new int[31][31];
 	ArrayList<Integer> visitadosLinear = new ArrayList<Integer>();
@@ -210,7 +209,7 @@ public class Ladrao extends ProgramaLadrao {
 
 		int felicidade = moverComFelicidade();
 		if (felicidade != 0) {
-			return moverParaDirecao(felicidade);
+			return felicidade;
 		}
 
 		int poupador = buscarPoupador();
